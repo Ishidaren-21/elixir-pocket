@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, googleProvider, getUserPreferences, saveUserPreferences } from "../firebase";
 import { AuthUser, UserPreferences } from "../types";
 import firebaseConfig from "../firebase-applet-config.json";
@@ -70,11 +70,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, [user]);
 
-  // Validate session on app initialization
+  // Restore session: Firebase first, old server session as fallback
   useEffect(() => {
-    const checkSession = async () => {
+    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+      // 1. Firebase remembers the user (Google sign-in): restore directly
+      if (fbUser) {
+        setUser({
+          uid: fbUser.uid,
+          email: fbUser.email,
+          displayName: fbUser.displayName || (fbUser.email ? fbUser.email.split("@")[0] : "User"),
+          photoURL: fbUser.photoURL,
+          emailVerified: fbUser.emailVerified,
+          isAnonymous: fbUser.isAnonymous,
+        });
+        setLoading(false);
+        return;
+      }
+
+      // 2. No Firebase user: check for an old server-based session token
       const token = localStorage.getItem("expense_tracker_session_token");
-      if (!token) {
+      if (!token || token.startsWith("fb_")) {
+        localStorage.removeItem("expense_tracker_session_token");
         setUser(null);
         setLoading(false);
         return;
@@ -104,9 +120,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } finally {
         setLoading(false);
       }
-    };
+    });
 
-    checkSession();
+    return unsubscribe;
   }, []);
 
   // Genuine Email & Password Login
@@ -402,6 +418,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     setLoading(true);
     try {
+      // Sign out of Firebase too, otherwise it would log the user straight back in
+      await signOut(auth).catch(() => {});
+
       const token = localStorage.getItem("expense_tracker_session_token");
       if (token) {
         await fetch("/api/auth/logout", {
