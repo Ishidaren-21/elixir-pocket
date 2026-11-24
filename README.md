@@ -4,12 +4,6 @@
 
 **An expense tracker I built because none of the ones I tried felt like mine.**
 
-[![Live App](https://img.shields.io/badge/Live_App-Try_it-66101F?style=for-the-badge)](https://elixir-pocket.vercel.app)
-![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)
-![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)
 
 
 </div>
