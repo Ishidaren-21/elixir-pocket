@@ -11,7 +11,6 @@
 ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)
 
-![Elixir Pocket dashboard](public/assets/aistudio/exp_tracker_image_cd4ba087.png)
 
 </div>
 
